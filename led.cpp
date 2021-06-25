@@ -1,7 +1,7 @@
 #include "led.h"
 GpioPin::GpioPin(char pinLet, int pinNum, int mode)
 {
-    pinLetter = pinLet;
+    this->pinLetter = pinLet;
     int pin;
     switch(pinLet)
     {
@@ -20,7 +20,7 @@ GpioPin::GpioPin(char pinLet, int pinNum, int mode)
         default:
             break;
     }
-    pinNumber = pinNum;
+    this->pinNumber = pinNum;
     *pRccAhb1Enr &= ~(0xffffffff);    
     *pRccAhb1Enr |= (1 << pin);
 
@@ -34,7 +34,7 @@ void GpioPin::ledOn()
 
 void GpioPin::ledOff()
 {
-    *pGpioDataD |= ~(1 << pinNumber);
+    *pGpioDataD &= ~(1 << pinNumber);
 }
 
 GpioPin::~GpioPin(){};

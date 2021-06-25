@@ -5,27 +5,26 @@ CFLAGS= -c -mcpu=$(MACH) -mthumb -mfloat-abi=soft -std=gnu11 -Wall -O0
 CPPFLAGS= -c -mcpu=$(MACH) -mthumb -mfloat-abi=soft -fno-exceptions -fno-rtti -Wall -O0
 LDFLAGS= -mcpu=$(MACH) -mthumb -mfloat-abi=soft --specs=nano.specs -T linker.ld -Wl,-Map=final.map
 LDFLAGS_SH= -mcpu=$(MACH) -mthumb -mfloat-abi=soft --specs=rdimon.specs -T linker.ld -Wl,-Map=final.map
+CSOURCE = $(wildcard *.c)
+CPPSOURCE = $(wildcard *.cpp)
+COBJS = $(CSOURCE:.c=.o)
+CPPOBJS = $(CPPSOURCE:.cpp=.o)
+HEADER = $(wildcard *.h)
 
-all:main.o startup.o syscalls.o led.o final.elf
+all:$(CPPOBJS) $(COBJS) final.elf
 
-semi:main.o startup.o led.o final_sh.elf
+semi:main.o startup.o led.o stack.o final_sh.elf
 
-main.o:main.cpp
+%.o: %.cpp
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-led.o:led.cpp
-	$(CPP) $(CPPFLAGS) -o $@ $^
-
-startup.o:startup.c
+%.o: %.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-syscalls.o:syscalls.c
-	$(CC) $(CFLAGS) -o $@ $^
+final.elf: $(CPPOBJS) $(COBJS) 
+	$(CC) $(LDFLAGS) -o $@ $^ 
 	
-final.elf: main.o startup.o syscalls.o led.o 
-	$(CC) $(LDFLAGS) -o $@ $^
-	
-final_sh.elf: main.o startup.o led.o
+final_sh.elf: main.o startup.o led.o stack.o
 	$(CC) $(LDFLAGS_SH) -o $@ $^
 
 clean:

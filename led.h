@@ -1,4 +1,4 @@
-#include <cstdint>
+#include <stdint.h>
 
 #define INPUT   0x00
 #define OUTPUT  0x01
